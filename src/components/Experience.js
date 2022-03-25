@@ -3,6 +3,7 @@ import React from "react";
 
 export default function Experience(props) {
     const [experienceState, setExperienceState] = React.useState({
+        id: '',
         employerName: '',
         workDesc: '',
         startDate: '',
