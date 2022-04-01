@@ -8,18 +8,21 @@ import Skills from "./components/Skills";
 import MainDetails from "./components/MainDetails";
 import Resume from "./components/Resume";
 
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 function App() {
   const [mainState, setMainState] = React.useState({
-    name: "",
-    title: "",
-    aboutMe: "",
+    name: "Example N. Ame",
+    title: "Software Developer",
+    aboutMe: "I am blah blah blha. Yes it's blah blah blah. I am blah blah blha. Yes it's blah blah blah. I am blah blah blha. Yes it's blah blah blah. I am blah blah blha. Yes it's blah blah blah. ",
     education: "", //edu===finalstate
     experience: "",
     skills: "",
-    email: "",
-    contact: "",
-    linkedIn: "",
-    github: ""
+    email: "bverystrict@email.com",
+    contact: "4563789675",
+    linkedIn: "https//examplelink.com/profile",
+    github: "https//gitlink.com/profile"
   })
 
   function updateMainState(event) {
@@ -38,7 +41,6 @@ function App() {
   const [eduFinalState, setEduFinalState] = React.useState([])
   
    function updateFinal(stat, identificationNo) {
-
    // console.log(identificationNo) //MAJOR BUG IF SAVE PRESSED WHEN ALL fiels empty, SOLUTION: MAKE SAVE BUTTON GREY, ONLY ACTIVATE WHEN ALL FIELS FILLED
     let indexOfState = eduFinalState.findIndex(eduObject => {
       return identificationNo === eduObject.id
@@ -47,10 +49,9 @@ function App() {
     setEduFinalState(prevState => {
       if(indexOfState == -1) {
         return [...prevState, stat]
-      } else {
-        eduFinalState[indexOfState] = stat
-        return eduFinalState
-      } 
+      }
+      eduFinalState[indexOfState] = stat
+      return eduFinalState
     })
 
     setMainState(prevMainState => {
@@ -72,7 +73,7 @@ function App() {
   }
 
   let allEdu = idState.map(item => {
-    return <Education key={item} uniqId={item} returnState={updateFinal} />
+    return <Education key={item} uniqId={item} returnState={updateFinal}/>
   })
 
 //EDU END /////////////////////////////////////////////////////////////
@@ -131,10 +132,43 @@ function updateSkillFinal(datum){
   })
 }
 
+function exportPdf() {
+
+  let divDimensionInfo = document.querySelector("#divToPrint").getBoundingClientRect()
+  let HTML_Width = divDimensionInfo.width
+  let HTML_Height = divDimensionInfo.height
+  let top_left_margin = 15;
+
+  let PDF_Width = HTML_Width+(top_left_margin*2);
+	let PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
+	let canvas_image_width = HTML_Width;
+  let canvas_image_height = HTML_Height;
+
+  let totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
+
+  html2canvas(document.querySelector("#divToPrint")).then(canvas => {
+
+    console.log(canvas.height+"  "+canvas.width);
+    // document.body.appendChild(canvas);  // if you want see your screenshot in body.
+     const imgData = canvas.toDataURL('image/png');
+     const pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
+     pdf.addImage(imgData, 'PNG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
+
+     for (let i = 1; i <= totalPDFPages; i++) { 
+      pdf.addPage([PDF_Width, PDF_Height]);
+      //console.log(i)
+      pdf.addImage(imgData, 'PNG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+    }
+
+     pdf.save("download.pdf"); 
+ });
+}
+
 //console.log(mainState)
 
   return(
     <div>
+      <form>
       <MainHeader nameInput={() => updateMainState(event)} nameState={mainState} titleInput={() => updateMainState(event)} />
       <AboutMe aboutInput={() => updateMainState(event)} aboutState={mainState} />
       {allEdu}
@@ -143,8 +177,8 @@ function updateSkillFinal(datum){
       <button type="button" onClick={addExpId}>Add Experience</button>
       <Skills returnSkillState={updateSkillFinal} />
       <MainDetails updateState={() => updateMainState(event)} />
-
-      <Resume allState={mainState} />
+      </form>
+      <Resume toPDF={exportPdf} allState={mainState} />
     </div>
   )
 }

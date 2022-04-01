@@ -7,7 +7,7 @@ export default function Skills(props) {
 
     let allFields = counterState.map(item => {
         return(
-            <input type="text" key={item} id={item-1} onChange={()=>updateState(event)} /> //onChange set array[i]=whateveristyped
+            <input type="text" key={item} id={item-1} onChange={()=>updateState(event)} placeholder="Skill" /> //onChange set array[i]=whateveristyped
         )
     })
 

@@ -2,6 +2,7 @@
 import React from "react";
 
 export default function Experience(props) {
+    const [formValid, setFormValid] = React.useState(true)
     const [experienceState, setExperienceState] = React.useState({
         id: '',
         employerName: '',
@@ -19,6 +20,7 @@ export default function Experience(props) {
             }
         })
         //console.log(eduState)
+        setFormValid(false)
     }
 
     function callbackParent() {
@@ -27,11 +29,11 @@ export default function Experience(props) {
 
     return (
         <div>
-            <input type="text" name="employerName" onChange={() => inputExpState(event)} />
-            <input type="text" name="workDesc" onChange={() => inputExpState(event)} />
+            <input type="text" name="employerName" onChange={() => inputExpState(event)} placeholder="Employer" />
+            <input type="text" name="workDesc" onChange={() => inputExpState(event)} placeholder="Responsibilities" />
             <input type="date" name="startDate" onChange={() => inputExpState(event)} />
             <input type="date" name="endDate" onChange={() => inputExpState(event)} />
-            <button type="button" onClick={callbackParent} >Save</button>
+            <button type="button" onClick={callbackParent} disabled={formValid} >Save</button>
         </div>
     )
 }
